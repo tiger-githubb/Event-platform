@@ -1,28 +1,29 @@
-import { IEvent } from '@/lib/database/models/event.model'
-import { formatDateTime } from '@/lib/utils'
-import { auth } from '@clerk/nextjs'
-import Image from 'next/image'
-import Link from 'next/link'
-import React from 'react'
-import { DeleteConfirmation } from './DeleteConfirmation'
+import { IEvent } from "@/lib/database/models/event.model";
+import { formatDateTime } from "@/lib/utils";
+import { auth } from "@clerk/nextjs";
+import Image from "next/image";
+import Link from "next/link";
+import { DeleteConfirmation } from "./DeleteConfirmation";
+import User from "@/lib/database/models/user.model";
 
 type CardProps = {
-  event: IEvent,
-  hasOrderLink?: boolean,
-  hidePrice?: boolean
-}
+  event: IEvent;
+  hasOrderLink?: boolean;
+  hidePrice?: boolean;
+};
 
-const Card = ({ event, hasOrderLink, hidePrice }: CardProps) => {
+const Card = async ({ event, hasOrderLink, hidePrice }: CardProps) => {
   const { sessionClaims } = auth();
-  const userId = sessionClaims?.userId as string;
-
+  const clerkId = sessionClaims?.sub as string;
+  const user = await User.findOne({ clerkId: clerkId });
+  const userId = user._id.toString();
   const isEventCreator = userId === event.organizer._id.toString();
 
   return (
     <div className="group relative flex min-h-[380px] w-full max-w-[400px] flex-col overflow-hidden rounded-xl bg-white shadow-md transition-all hover:shadow-lg md:min-h-[438px]">
-      <Link 
+      <Link
         href={`/events/${event._id}`}
-        style={{backgroundImage: `url(${event.imageUrl})`}}
+        style={{ backgroundImage: `url(${event.imageUrl})` }}
         className="flex-center flex-grow bg-gray-50 bg-cover bg-center text-grey-500"
       />
       {/* IS EVENT CREATOR ... */}
@@ -37,21 +38,19 @@ const Card = ({ event, hasOrderLink, hidePrice }: CardProps) => {
         </div>
       )}
 
-      <div
-        className="flex min-h-[230px] flex-col gap-3 p-5 md:gap-4"
-      > 
-       {!hidePrice && <div className="flex gap-2">
-          <span className="p-semibold-14 w-min rounded-full bg-green-100 px-4 py-1 text-green-60">
-            {event.isFree ? 'FREE' : `$${event.price}`}
-          </span>
-          <p className="p-semibold-14 w-min rounded-full bg-grey-500/10 px-4 py-1 text-grey-500 line-clamp-1">
-            {event.category.name}
-          </p>
-        </div>}
+      <div className="flex min-h-[230px] flex-col gap-3 p-5 md:gap-4">
+        {!hidePrice && (
+          <div className="flex gap-2">
+            <span className="p-semibold-14 w-min rounded-full bg-green-100 px-4 py-1 text-green-60">
+              {event.isFree ? "FREE" : `$${event.price}`}
+            </span>
+            <p className="p-semibold-14 w-min rounded-full bg-grey-500/10 px-4 py-1 text-grey-500 line-clamp-1">
+              {event.category.name}
+            </p>
+          </div>
+        )}
 
-        <p className="p-medium-16 p-medium-18 text-grey-500">
-          {formatDateTime(event.startDateTime).dateTime}
-        </p>
+        <p className="p-medium-16 p-medium-18 text-grey-500">{formatDateTime(event.startDateTime).dateTime}</p>
 
         <Link href={`/events/${event._id}`}>
           <p className="p-medium-16 md:p-medium-20 line-clamp-2 flex-1 text-black">{event.title}</p>
@@ -71,7 +70,7 @@ const Card = ({ event, hasOrderLink, hidePrice }: CardProps) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Card
+export default Card;
