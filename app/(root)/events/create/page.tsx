@@ -1,10 +1,13 @@
-import EventForm from "@/components/shared/EventForm"
+import EventForm from "@/components/shared/EventForm";
+import User from "@/lib/database/models/user.model";
 import { auth } from "@clerk/nextjs";
 
-const CreateEvent = () => {
+const CreateEvent = async () => {
   const { sessionClaims } = auth();
 
-  const userId = sessionClaims?.userId as string;
+  const clerkId = sessionClaims?.sub as string;
+  const user = await User.findOne({ clerkId: clerkId });
+  const userId = user._id.toString();
 
   return (
     <>
@@ -16,7 +19,7 @@ const CreateEvent = () => {
         <EventForm userId={userId} type="Create" />
       </div>
     </>
-  )
-}
+  );
+};
 
-export default CreateEvent
+export default CreateEvent;
