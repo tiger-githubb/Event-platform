@@ -1,8 +1,8 @@
-'use client'
+"use client";
 
-import { useTransition } from 'react'
-import { usePathname } from 'next/navigation'
-import Image from 'next/image'
+import Image from "next/image";
+import { usePathname } from "next/navigation";
+import { useTransition } from "react";
 
 import {
   AlertDialog,
@@ -14,13 +14,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog'
+} from "@/components/ui/alert-dialog";
 
-import { deleteEvent } from '@/lib/actions/event.actions'
+import { deleteEvent } from "@/lib/actions/event.actions";
 
 export const DeleteConfirmation = ({ eventId }: { eventId: string }) => {
-  const pathname = usePathname()
-  let [isPending, startTransition] = useTransition()
+  const pathname = usePathname();
+  let [isPending, startTransition] = useTransition();
 
   return (
     <AlertDialog>
@@ -30,25 +30,26 @@ export const DeleteConfirmation = ({ eventId }: { eventId: string }) => {
 
       <AlertDialogContent className="bg-white">
         <AlertDialogHeader>
-          <AlertDialogTitle>Are you sure you want to delete?</AlertDialogTitle>
+          <AlertDialogTitle>Etes-vous sûr que vous voulez supprimer?</AlertDialogTitle>
           <AlertDialogDescription className="p-regular-16 text-grey-600">
-            This will permanently delete this event
+            Cela supprimera en permanence cet événement
           </AlertDialogDescription>
         </AlertDialogHeader>
 
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel>Annuler</AlertDialogCancel>
 
           <AlertDialogAction
             onClick={() =>
               startTransition(async () => {
-                await deleteEvent({ eventId, path: pathname })
+                await deleteEvent({ eventId, path: pathname });
               })
-            }>
-            {isPending ? 'Deleting...' : 'Delete'}
+            }
+          >
+            {isPending ? "Suppression ..." : "Supprimer"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  )
-}
+  );
+};
