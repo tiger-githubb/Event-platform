@@ -16,7 +16,7 @@ const Card = async ({ event, hasOrderLink, hidePrice }: CardProps) => {
   const { sessionClaims } = auth();
   const clerkId = sessionClaims?.sub as string;
   const user = await User.findOne({ clerkId: clerkId });
-  const userId = user._id.toString();
+  const userId = user?._id.toString();
   const isEventCreator = userId === event.organizer._id.toString();
 
   return (
